@@ -57,10 +57,10 @@
 ensure they don't remain synchronised.  The frequency of the interrupt that
 operates above the max syscall interrupt priority is 10 times faster so really
 hammers the interrupt entry and exit code. */
-#define tmrTIMERS_USED	2
+#define tmrTIMERS_USED	3
 #define tmrTIMER_0_FREQUENCY	( 2000UL )
 #define tmrTIMER_1_FREQUENCY	( 2001UL )
-//#define tmrTIMER_2_FREQUENCY	( 20000UL )
+#define tmrTIMER_2_FREQUENCY	( 20000UL )
 
 /*-----------------------------------------------------------*/
 
@@ -73,10 +73,8 @@ static void prvTimerHandler( void *CallBackRef );
 /*-----------------------------------------------------------*/
 
 /* Hardware constants. */
-//static const BaseType_t xDeviceIDs[ tmrTIMERS_USED ] = { XPAR_XTTCPS_0_DEVICE_ID, XPAR_XTTCPS_1_DEVICE_ID, XPAR_XTTCPS_2_DEVICE_ID };
-static const BaseType_t xBaseAddresses[ tmrTIMERS_USED ] = { XPAR_XTTCPS_0_BASEADDR, XPAR_XTTCPS_1_BASEADDR };
-//static const BaseType_t xInterruptIDs[ tmrTIMERS_USED ] = { XPAR_XTTCPS_0_INTR, XPAR_XTTCPS_1_INTR, XPAR_XTTCPS_2_INTR };
-static const BaseType_t xInterruptIDs[ tmrTIMERS_USED ] = { XPAR_XTTCPS_0_INTR, XPAR_XTTCPS_3_INTR };
+static const BaseType_t xBaseAddresses[ tmrTIMERS_USED ] = { XPAR_XTTCPS_0_BASEADDR, XPAR_XTTCPS_1_BASEADDR, XPAR_XTTCPS_2_BASEADDR };
+static const BaseType_t xInterruptIDs[ tmrTIMERS_USED ] = { XPAR_XTTCPS_0_INTR, XPAR_XTTCPS_1_INTR, XPAR_XTTCPS_2_INTR };
 
 /* Timer configuration settings. */
 typedef struct
@@ -91,7 +89,7 @@ static TmrCntrSetup xTimerSettings[ tmrTIMERS_USED ] =
 {
 	{ tmrTIMER_0_FREQUENCY, 0, 0, XTTCPS_OPTION_INTERVAL_MODE | XTTCPS_OPTION_WAVE_DISABLE },
 	{ tmrTIMER_1_FREQUENCY, 0, 0, XTTCPS_OPTION_INTERVAL_MODE | XTTCPS_OPTION_WAVE_DISABLE },
-	//{ tmrTIMER_2_FREQUENCY, 0, 0, XTTCPS_OPTION_INTERVAL_MODE | XTTCPS_OPTION_WAVE_DISABLE }
+	{ tmrTIMER_2_FREQUENCY, 0, 0, XTTCPS_OPTION_INTERVAL_MODE | XTTCPS_OPTION_WAVE_DISABLE }
 };
 
 /* Lower priority number means higher logical priority, so
@@ -101,7 +99,7 @@ static const UBaseType_t uxInterruptPriorities[ tmrTIMERS_USED ] =
 {
 	configMAX_API_CALL_INTERRUPT_PRIORITY + 1,
 	configMAX_API_CALL_INTERRUPT_PRIORITY,
-	//configMAX_API_CALL_INTERRUPT_PRIORITY - 1
+	configMAX_API_CALL_INTERRUPT_PRIORITY - 1
 };
 
 static XTtcPs xTimerInstances[ tmrTIMERS_USED ];
@@ -190,7 +188,7 @@ BaseType_t xYieldRequired;
 
 #if( configASSERT_DEFINED == 1 )
 	/* Test floating point access within nested interrupts. */
-	//volatile long double d1, d2;
+	volatile long double d1, d2;
 #endif
 
 
@@ -207,8 +205,8 @@ BaseType_t xYieldRequired;
 		#if( configASSERT_DEFINED == 1 )
 		{
 			/* Test floating point access within nested interrupts. */
-			//d1 = 1.5L;
-			//d2 = 5.25L;
+			d1 = 1.5L;
+			d2 = 5.25L;
 		}
 		#endif /* configASSERT_DEFINED */
 
@@ -217,15 +215,15 @@ BaseType_t xYieldRequired;
 		/* Will fail eventually if flop context switch is not correct in
 		interrupts.  Keep calculation simple so the answer is exact even when
 		using flop. */
-		//configASSERT( ( d1 * d2 ) == ( 1.5L * 5.25L ) );
+		configASSERT( ( d1 * d2 ) == ( 1.5L * 5.25L ) );
 	}
-	else //if( pxTimer == &( xTimerInstances[ 1 ] ) )
+	else if( pxTimer == &( xTimerInstances[ 1 ] ) )
 	{
 		#if( configASSERT_DEFINED == 1 )
 		{
 			/* Test floating point access within nested interrupts. */
-			//d1 = 10.5L;
-			//d2 = 5.5L;
+			d1 = 10.5L;
+			d2 = 5.5L;
 		}
 		#endif /* configASSERT_DEFINED */
 
@@ -234,20 +232,20 @@ BaseType_t xYieldRequired;
 		/* Will fail eventually if flop context switch is not correct in
 		interrupts.  Keep calculation simple so the answer is exact even when
 		using flop. */
-		//configASSERT( ( d1 / d2 ) == ( 10.5L / 5.5L ) );
-	// }
-	// else
-	// {
-	// 	/* Used to check the timer is running at the expected frequency. */
-	// 	ulHighFrequencyTimerCounts++;
+		configASSERT( ( d1 / d2 ) == ( 10.5L / 5.5L ) );
+	}
+	else
+	{
+		/* Used to check the timer is running at the expected frequency. */
+		ulHighFrequencyTimerCounts++;
 
-	// 	/* Latch the highest interrupt nesting count detected. */
-	// 	if( ulPortInterruptNesting > ulMaxRecordedNesting )
-	// 	{
-	// 		ulMaxRecordedNesting = ulPortInterruptNesting;
-	// 	}
+		/* Latch the highest interrupt nesting count detected. */
+		if( ulPortInterruptNesting > ulMaxRecordedNesting )
+		{
+			ulMaxRecordedNesting = ulPortInterruptNesting;
+		}
 
-	// 	xYieldRequired = pdFALSE;
+		xYieldRequired = pdFALSE;
 	}
 
 	/* If xYieldRequired is not pdFALSE then calling either xFirstTimerHandler()

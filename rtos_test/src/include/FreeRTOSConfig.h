@@ -87,6 +87,8 @@ void vApplicationAssert( const char *pcFile, uint32_t ulLine );
 void FreeRTOS_SetupTickInterrupt(void);
 #define configSETUP_TICK_INTERRUPT() FreeRTOS_SetupTickInterrupt()
 
+#define portENABLE_FPU_SAFE_IRQ_HANDLER 1
+
 //#include "trcRecorder.h"
 
 #endif /* _FREERTOSCONFIG_H */
