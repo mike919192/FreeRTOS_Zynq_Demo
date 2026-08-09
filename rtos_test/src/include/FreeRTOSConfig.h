@@ -83,10 +83,15 @@
 
 #define portGET_RUN_TIME_COUNTER_VALUE()
 
+#define portENABLE_FPU_SAFE_IRQ_HANDLER 1
+#define portENABLE_CHECK_FPU_SAFE_IRQ_IS_NEEDED 0
+
+#ifndef __ASSEMBLER__
 void vApplicationAssert( const char *pcFile, uint32_t ulLine );
 void FreeRTOS_SetupTickInterrupt(void);
-#define configSETUP_TICK_INTERRUPT() FreeRTOS_SetupTickInterrupt()
 
+#define configSETUP_TICK_INTERRUPT() FreeRTOS_SetupTickInterrupt()
 //#include "trcRecorder.h"
+#endif /* __ASSEMBLER__ */
 
 #endif /* _FREERTOSCONFIG_H */

@@ -188,7 +188,7 @@ BaseType_t xYieldRequired;
 
 #if( configASSERT_DEFINED == 1 )
 	/* Test floating point access within nested interrupts. */
-	//volatile long double d1, d2;
+	volatile long double d1, d2;
 #endif
 
 
@@ -205,8 +205,8 @@ BaseType_t xYieldRequired;
 		#if( configASSERT_DEFINED == 1 )
 		{
 			/* Test floating point access within nested interrupts. */
-			//d1 = 1.5L;
-			//d2 = 5.25L;
+			d1 = 1.5L;
+			d2 = 5.25L;
 		}
 		#endif /* configASSERT_DEFINED */
 
@@ -215,15 +215,15 @@ BaseType_t xYieldRequired;
 		/* Will fail eventually if flop context switch is not correct in
 		interrupts.  Keep calculation simple so the answer is exact even when
 		using flop. */
-		//configASSERT( ( d1 * d2 ) == ( 1.5L * 5.25L ) );
+		configASSERT( ( d1 * d2 ) == ( 1.5L * 5.25L ) );
 	}
 	else if( pxTimer == &( xTimerInstances[ 1 ] ) )
 	{
 		#if( configASSERT_DEFINED == 1 )
 		{
 			/* Test floating point access within nested interrupts. */
-			//d1 = 10.5L;
-			//d2 = 5.5L;
+			d1 = 10.5L;
+			d2 = 5.5L;
 		}
 		#endif /* configASSERT_DEFINED */
 
@@ -232,7 +232,7 @@ BaseType_t xYieldRequired;
 		/* Will fail eventually if flop context switch is not correct in
 		interrupts.  Keep calculation simple so the answer is exact even when
 		using flop. */
-		//configASSERT( ( d1 / d2 ) == ( 10.5L / 5.5L ) );
+		configASSERT( ( d1 / d2 ) == ( 10.5L / 5.5L ) );
 	}
 	else
 	{
