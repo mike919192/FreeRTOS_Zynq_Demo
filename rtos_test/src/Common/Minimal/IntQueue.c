@@ -199,21 +199,13 @@ static void prvQueueAccessLogError( UBaseType_t uxLine );
 
 void vStartInterruptQueueTasks( void )
 {
-    TaskHandle_t xLowPriorityNormallyEmptyTask, xLowPriorityNormallyFullTask;
     /* Start the test tasks. */
     xTaskCreate( prvHigherPriorityNormallyEmptyTask, "H1QRx", configMINIMAL_STACK_SIZE, ( void * ) intqHIGH_PRIORITY_TASK1, intqHIGHER_PRIORITY, &xHighPriorityNormallyEmptyTask1 );
     xTaskCreate( prvHigherPriorityNormallyEmptyTask, "H2QRx", configMINIMAL_STACK_SIZE, ( void * ) intqHIGH_PRIORITY_TASK2, intqHIGHER_PRIORITY, &xHighPriorityNormallyEmptyTask2 );
-    xTaskCreate( prvLowerPriorityNormallyEmptyTask, "L1QRx", configMINIMAL_STACK_SIZE, NULL, intqLOWER_PRIORITY, &xLowPriorityNormallyEmptyTask );
+    xTaskCreate( prvLowerPriorityNormallyEmptyTask, "L1QRx", configMINIMAL_STACK_SIZE, NULL, intqLOWER_PRIORITY, NULL );
     xTaskCreate( prv1stHigherPriorityNormallyFullTask, "H1QTx", configMINIMAL_STACK_SIZE, ( void * ) intqHIGH_PRIORITY_TASK1, intqHIGHER_PRIORITY, &xHighPriorityNormallyFullTask1 );
     xTaskCreate( prv2ndHigherPriorityNormallyFullTask, "H2QTx", configMINIMAL_STACK_SIZE, ( void * ) intqHIGH_PRIORITY_TASK2, intqHIGHER_PRIORITY, &xHighPriorityNormallyFullTask2 );
-    xTaskCreate( prvLowerPriorityNormallyFullTask, "L2QRx", configMINIMAL_STACK_SIZE, NULL, intqLOWER_PRIORITY, &xLowPriorityNormallyFullTask );
-
-    // vTaskCoreAffinitySet(xHighPriorityNormallyEmptyTask1, (1 << 0));
-    // vTaskCoreAffinitySet(xHighPriorityNormallyEmptyTask2, (1 << 0));
-    // vTaskCoreAffinitySet(xLowPriorityNormallyEmptyTask, (1 << 0));
-    // vTaskCoreAffinitySet(xHighPriorityNormallyFullTask1, (1 << 1));
-    // vTaskCoreAffinitySet(xHighPriorityNormallyFullTask2, (1 << 1));
-    // vTaskCoreAffinitySet(xLowPriorityNormallyFullTask, (1 << 1));
+    xTaskCreate( prvLowerPriorityNormallyFullTask, "L2QRx", configMINIMAL_STACK_SIZE, NULL, intqLOWER_PRIORITY, NULL );
 
     /* Create the queues that are accessed by multiple tasks and multiple
      * interrupts. */
