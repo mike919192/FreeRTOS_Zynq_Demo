@@ -8,6 +8,12 @@ project(${APP_NAME})
 
 find_package(common)
 enable_language(C ASM CXX)
+
+#Force the ARM GCC linker to wrap ALL libraries in a group
+set(CMAKE_CXX_LINK_EXECUTABLE
+    "<CMAKE_CXX_COMPILER> <FLAGS> <CMAKE_CXX_LINK_FLAGS> <LINK_FLAGS> <OBJECTS> -o <TARGET> -Wl,--start-group <LINK_LIBRARIES> -Wl,--end-group"
+)
+
 collect(PROJECT_LIB_DEPS xilstandalone;xiltimer;xilrsa)
 
 #CPP STANDARD
